@@ -1,0 +1,12 @@
+.DS_Store
+*.swp
+*.swo
+*~
+.idea/
+.vscode/
+__pycache__/
+*.pyc
+node_modules/
+
+# Working artifacts from skill iteration; don't ship
+harness-design-workspace/

@@ -1,0 +1,29 @@
+{
+  "skill_name": "harness-design",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I want to rebuild my Next.js dashboard app from scratch. It has 6 modules and I want to use multiple Claude Code agents to build it. The modules are independent so they shouldn't import from each other. How should I set this up?",
+      "expected_output": "Design a Project-scale software harness with Planner/Builder/QA, worktree parallelism for independent modules, Playwright QA, and principle-level new behaviors (baseline first, model-upgrade review, dynamic exit, no sprint language, no hardcoded ceremony table).",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "I have a GitHub repo with 200+ issues and I want an AI agent workflow that automatically triages new issues, labels them, finds similar past issues, and suggests fixes based on how similar issues were resolved before. This should run continuously.",
+      "expected_output": "Design a continuous Operations harness with coordinator/executor/monitor, experience layer (low + high level), domain-specific failure modes, source immutability for issue stream, minimum-scaffolding-first approach, and principle-level new behaviors.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "Help me set up a harness to develop a browser extension. It's a Chrome extension with popup UI, background service worker, and content scripts. I want good QA because browser extensions are hard to test.",
+      "expected_output": "Design a software harness with domain research on Chrome extension pitfalls, units of work per extension surface, QA strategy addressing manifest/service-worker/content-script challenges, calibrated verifier, and principle-level new behaviors.",
+      "files": []
+    }
+  ],
+  "assertion_groups": {
+    "retained": "Behaviors from iteration-2 that must still pass after the refactor",
+    "retained-specific": "Domain-specific retained behaviors",
+    "new-principle": "Behaviors added by the iteration-3 refactor (new skill should pass, old skill likely fails)",
+    "new-principle-negative": "Absence checks — new skill should NOT contain old template language"
+  }
+}
