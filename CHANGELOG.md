@@ -4,6 +4,34 @@ All notable changes to this skill. Updates are evidence-based — each entry cit
 
 The format is loosely based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.2.0] — 2026-05-16
+
+Pruned skill ecosystem + integration with external skill packs. Motivated by the realization that Claude Code's native tools (Read/Write/Edit/Bash/Agent/Hooks/etc.) already provide most of what wraparound prompt-template skills offer — only **unique technology** (browser daemon, design pipelines, well-tuned audit prompts) and **methodology that Claude Code doesn't ship** (TDD discipline, diagnosis loop, ubiquitous-language grilling) earn shelf space.
+
+### Added
+
+- **`references/software_harness_with_skills.md`** — two-layer model (methodology = mattpocock, runtime = pruned gstack), per-role skill mapping (Coordinator/Builder/QA), pruned install procedure, blackboard updates (CONTEXT.md + docs/adr/). *Motivated by*: `evidence/2026-05-15_mattpocock_vs_gstack.md`.
+- **`.harness/CONTEXT.md`** + **`.harness/docs/adr/`** to the blackboard layout. Owned by mattpocock `/grill-with-docs`. Created lazily — first term resolved → file appears. ADRs use three-condition rule (hard-to-reverse + surprising-without-context + real-trade-off).
+- New entries documenting how mattpocock's CONTEXT.md / ADR pattern composes with our `lessons.md` (non-overlapping: glossary / decisions / failure-fixes / accepted-tradeoffs each have a home).
+
+### Changed
+
+- SKILL.md routing table promotes `software_harness_with_skills.md` as the recommended starting point for software projects with external skill packs.
+- Coordinator default for new-project planning shifts from gstack `/office-hours` → mattpocock `/grill-with-docs` (writes CONTEXT.md inline; more terse; ADR three-condition rule prevents decision-doc bloat).
+- Builder default debugging shifts from gstack `/investigate` → mattpocock `/diagnose` (significantly higher methodology density: 10 explicit feedback-loop construction strategies, perf vs logic branch separation, regression-test seam discipline).
+
+### Removed (from the recommended install, not from this repo)
+
+- 29 gstack skills replaceable by Claude Code native or mattpocock equivalents. See `references/software_harness_with_skills.md` "Remove from gstack" table for the full list. Notable removals: `/office-hours` `/autoplan` `/plan-*-review` `/investigate` `/careful` `/freeze` `/learn` `/ship` `/codex` `/context-save` etc.
+
+### Kept
+
+- 16 gstack skills with non-replicable tech: `/browse` daemon, `/qa` `/qa-only`, `/cso`, `/canary` `/benchmark`, `/design-shotgun` `/design-html` `/design-review` `/design-consultation`, `/scrape` `/skillify`, `/pair-agent`, browse adjuncts.
+
+### Evidence-driven rationale
+
+- `evidence/2026-05-15_mattpocock_vs_gstack.md` — head-to-head comparison of mattpocock and gstack across philosophy, skill quality, and harness fit. Includes an e2e test running mattpocock `/tdd` in a sandbox (`/tmp/skills-eval-20260516/tdd-demo/`) that surfaced a real `size=0` infinite-loop bug — concrete demonstration of TDD's vertical-slicing discipline catching what spec-writing would miss.
+
 ## [0.1.0] — 2026-05-13
 
 Initial public release. Synthesizes the original Anthropic-derived meta-skill with two new lines of evidence:

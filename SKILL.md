@@ -54,7 +54,9 @@ Three roles, one blackboard, two `.claude/` files.
 ├── spec.md         ← current plan (Coordinator-written, user-confirmed)
 ├── progress.tsv    ← one row per QA round
 ├── HANDOFF.md      ← cross-session continuity
-├── lessons.md      ← rolling failure → fix → prevention (new in v0.1)
+├── lessons.md      ← rolling failure → fix → prevention (v0.1)
+├── CONTEXT.md      ← domain glossary, ubiquitous language (v0.2, when /grill-with-docs is used)
+├── docs/adr/       ← architectural decision records (v0.2, three-condition rule — see below)
 └── reports/        ← build_*.md + qa_*.md per round
 ```
 
@@ -62,6 +64,7 @@ Routing table — read only what you need:
 
 | If you need … | Read |
 |---|---|
+| Software project + skill packs (mattpocock methodology + gstack runtime) | **`references/software_harness_with_skills.md`** (new in v0.2) |
 | Software project blackboard, agent files, browser verification | `references/software_harness.md` |
 | Knowledge / wiki / research harness (wiki-as-blackboard) | `references/knowledge_harness.md` |
 | Operations / continuous-loop harness (experience layer) | `references/operations_harness.md` |
