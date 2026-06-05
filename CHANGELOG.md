@@ -4,6 +4,23 @@ All notable changes to this skill. Updates are evidence-based — each entry cit
 
 The format is loosely based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.2.1] — 2026-06-05
+
+Documentation hygiene + gstack runtime retirement. Motivated by `evidence/2026-06-05_gstack_retirement.md`: the user retired gstack entirely (closing the 05-08 → 05-10 → 05-15 → 06-05 decision chain), and a 39-agent deep-research audit of the skill + finsim_Mini found six instances of documentation drift, all line-verified before fixing.
+
+### Changed
+
+- **gstack runtime layer marked retired across living docs.** `software_harness_with_skills.md` gains a status banner (runtime-layer sections kept as historical record; methodology layer remains current). `agent_definitions.md` / `software_harness.md` browser-QA recommendations demoted to historical notes — Playwright MCP restored as the default. SKILL.md routing-table label updated. The QA-runs-the-product doctrine is unchanged (tool-agnostic).
+- **Exit-rule wording aligned** to SKILL.md's simplified rule (r1 PASS exits) in `software_harness.md` and `knowledge_harness.md` — the old "two consecutive rounds" phrasing had survived v0.1's simplification in both worked examples.
+- **Version pins removed from living docs**: SKILL.md banner no longer names a skill version; hardcoded model versions ("Opus 4.6", "Opus 3.5 vs 4.6") replaced with version-agnostic wording. Version facts live in CHANGELOG only.
+- **`/investigate` residue cleaned** from `agent_definitions.md` (it was removed from recommendations in v0.2); `/diagnose` is the debugging default.
+- **README layout block completed** (`software_harness_with_skills.md` + the two newer evidence files) and stale "NEW" tags dropped.
+
+### Deferred (explicitly not in this release)
+
+- **Dynamic-workflow integration** (five candidate proposals from the 2026-06-04 research): zero in-harness empirical runs exist; dual-lens adversarial verification killed the whole line pending one real run with a verifiable transcript. See the evidence file's Open questions.
+- **finsim seven-piece patterns** (archive/prune/STYLE/COMMIT_TEMPLATE etc.): runtime-unverified (~2-week window, zero observations, unpushed). Revisit after Verify metrics are observable.
+
 ## [0.2.0] — 2026-05-16
 
 Pruned skill ecosystem + integration with external skill packs. Motivated by the realization that Claude Code's native tools (Read/Write/Edit/Bash/Agent/Hooks/etc.) already provide most of what wraparound prompt-template skills offer — only **unique technology** (browser daemon, design pipelines, well-tuned audit prompts) and **methodology that Claude Code doesn't ship** (TDD discipline, diagnosis loop, ubiquitous-language grilling) earn shelf space.

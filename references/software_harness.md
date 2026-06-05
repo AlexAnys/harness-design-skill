@@ -59,7 +59,7 @@ The file names here are not magic. What matters:
 
 For a unit where "done" is obvious from the spec, skip this. For a unit where it isn't — especially new patterns, new integrations, or anything where Builder and QA could reasonably disagree — Builder writes a short proposed acceptance list, QA adds what's missing, both agree, and only then does Builder start coding. This catches disagreements before work rather than at the end.
 
-This replaces the older "Sprint Contract" concept. The reframe is important: the point is **alignment on done**, not **chunking work into sprints**. The modern frontier model can work coherently through large units; splitting those into sprints is making Opus 3.5's job easier, not 4.6's.
+This replaces the older "Sprint Contract" concept. The reframe is important: the point is **alignment on done**, not **chunking work into sprints**. The modern frontier model can work coherently through large units; splitting those into sprints is optimizing for a previous model generation's limits, not the current one's.
 
 ---
 
@@ -72,9 +72,9 @@ Plan → Build → Verify ─── PASS → git commit → next unit
                                     └─ YES → spec / approach is wrong, re-plan
 ```
 
-**Dynamic exit:**
-- Two consecutive rounds with no new issues → commit and stop. Don't run a third "just to be sure."
-- Three repetitions of the same issue → escalate. The spec is wrong, or the approach is wrong, or there's a hidden dependency nobody modeled.
+**Dynamic exit** (aligned with SKILL.md's simplified rule — the old "two consecutive PASS" version had a 3% real trigger rate in finsim and was retired):
+- r1 PASS → commit and move on. Don't run an extra round "just to be sure."
+- The same failure twice in a row → stop fixing and re-plan, then write a lesson. The spec is wrong, or the approach is wrong, or there's a hidden dependency nobody modeled.
 
 **Keep / discard:**
 - PASS → `git commit` with a descriptive message. Frontier advances.
@@ -100,11 +100,9 @@ For anything with a UI, this means browser automation (Playwright MCP is the usu
 
 For CLI tools and APIs, the analog is the same: actually invoke it, capture the output, diff against expectations. Don't grade from the source alone.
 
-### Browser QA with gstack (when installed)
+### Browser QA daemon (historical note)
 
-For web projects, gstack's `/qa-only` provides a persistent Chromium daemon with sub-100ms command latency, cookie import for authenticated testing, and screenshot capture for evidence. Unlike Playwright MCP which cold-starts each session, the daemon stays alive (auto-shutdown after 30min idle), making multi-step browser verification practical.
-
-The QA agent invokes `/qa-only` within its own session — it does not spawn a separate agent. `/qa-only` is report-only (no code changes), which aligns with QA's "no Edit" constraint. For the Builder, `/qa` (with auto-fix) can be used during development for self-testing, but formal verification still runs through the independent QA agent using `/qa-only`.
+v0.1–v0.2 recommended gstack's `/qa-only` persistent-Chromium daemon here (sub-100ms commands vs Playwright MCP cold starts; it caught finsim's PR-AUTH-1 inline-style bug via `getComputedStyle`). gstack was retired in June 2026 — see `evidence/2026-06-05_gstack_retirement.md`. The doctrine above is tool-agnostic and unchanged: QA uses the product through a real browser, report-only, no Edit. Playwright MCP is the current default; whether it suffices for authenticated multi-step flows is an open question tracked in the evidence file.
 
 ---
 

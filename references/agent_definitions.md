@@ -30,7 +30,7 @@ mcpServers:                       # optional
 ---
 ```
 
-**Why `model: opus[1m]`**: harness agents need to hold the plan, prior reports, and domain knowledge in one context window. Opus 4.6 with 1M context holds whole repositories. Shorter contexts force chunking that the harness principles explicitly argue against.
+**Why `model: opus[1m]`**: harness agents need to hold the plan, prior reports, and domain knowledge in one context window. Opus with 1M context (`opus[1m]`) holds whole repositories. Shorter contexts force chunking that the harness principles explicitly argue against.
 
 **Why `acceptEdits` and not `bypassPermissions`**: `bypassPermissions` silently ignores the `tools` allow-list. If you write `tools: Read, Write` and set `bypassPermissions`, the agent will happily run `Bash` and nothing stops it. Use `acceptEdits` so the scope is actually enforced.
 
@@ -60,7 +60,7 @@ mcpServers:
 ```
 QA reads the plan and the code, actually runs things (Bash, Playwright), and writes reports. Critically, QA should *not* have `Edit` — a verifier that can edit the code it's verifying will silently "fix" problems instead of reporting them. Make QA write its findings; make Builder read them and act.
 
-For web projects with gstack installed, the QA agent should invoke `/qa-only` for browser-based verification instead of configuring Playwright MCP separately. gstack's browse daemon provides persistent Chromium with sub-100ms latency, cookie import for authenticated testing, and screenshot capture — all report-only, matching QA's "no Edit" constraint. The Builder can use `/qa` (with auto-fix) for self-testing during development, and `/investigate` for structured debugging.
+For structured debugging during development, the Builder uses the methodology skill `/diagnose`. (An earlier revision recommended gstack's `/qa-only` / `/qa` browser daemon here; gstack was retired in June 2026 — see `evidence/2026-06-05_gstack_retirement.md`. Browser verification defaults to the Playwright MCP setup above.)
 
 **Coordinator** (answers "who should do this next"):
 ```yaml

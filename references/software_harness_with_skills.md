@@ -2,6 +2,8 @@
 
 > For software projects where mattpocock/skills (methodology) and/or gstack (runtime infrastructure) are installed. This reference shows how to wire them into the three harness roles **without bloating Coordinator context** or duplicating Claude Code native capabilities.
 
+> **Status 2026-06-05 — gstack retired.** The user retired gstack entirely (quality + context-cost grounds; see `evidence/2026-06-05_gstack_retirement.md`). The runtime-layer sections below are kept as a **historical record** of the two-layer analysis — do not install from them. Only the **methodology layer (mattpocock) remains current**. Browser QA defaults back to Playwright MCP (`references/agent_definitions.md`); what replaces the daemon for authenticated multi-step flows is an open question tracked in the evidence file.
+
 ## The two-layer mental model
 
 ```

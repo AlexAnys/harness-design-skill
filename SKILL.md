@@ -7,7 +7,7 @@ description: Design and set up a multi-agent harness for any project type — so
 
 A meta-skill for setting up multi-agent harnesses. The output is the scaffolding (agents, blackboard, hooks) that the project uses to do its real work — not the work itself.
 
-> This skill is **evidence-based**: it updates after each real project from observations recorded in `evidence/`. The current version (v0.1) reflects findings from the finsim audit (Apr 2026) and the 2026 spring coding-agent best-practice research. See `evidence/` for the raw findings.
+> This skill is **evidence-based**: it updates after each real project from observations recorded in `evidence/`. See `CHANGELOG.md` for version history and `evidence/` for the raw findings.
 
 ---
 
@@ -64,7 +64,7 @@ Routing table — read only what you need:
 
 | If you need … | Read |
 |---|---|
-| Software project + skill packs (mattpocock methodology + gstack runtime) | **`references/software_harness_with_skills.md`** (new in v0.2) |
+| Software project + skill packs (mattpocock methodology layer; gstack runtime retired 2026-06) | **`references/software_harness_with_skills.md`** |
 | Software project blackboard, agent files, browser verification | `references/software_harness.md` |
 | Knowledge / wiki / research harness (wiki-as-blackboard) | `references/knowledge_harness.md` |
 | Operations / continuous-loop harness (experience layer) | `references/operations_harness.md` |

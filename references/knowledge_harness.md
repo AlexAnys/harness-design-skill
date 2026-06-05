@@ -75,7 +75,7 @@ Ingest → Compile → Lint ─── CLEAN → log + commit → next source
 
 Contradictions between sources aren't always "Compiler error — fix it." Sometimes the sources genuinely disagree and the wiki should say so. The linter should flag contradictions, not silently pick a winner.
 
-**Dynamic exit:** Two consecutive clean compiles of new sources means the compiler is in a stable rhythm — stop and move on. Stalling for a third "just to be sure" round adds nothing.
+**Dynamic exit:** a clean compile exits the cycle — don't re-lint "just to be sure." The same lint failure twice in a row → escalate and write a lesson. (Mirrors SKILL.md's simplified r1-PASS rule; the older "two consecutive clean rounds" phrasing was retired with it.)
 
 ---
 

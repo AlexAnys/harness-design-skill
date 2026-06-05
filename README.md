@@ -36,17 +36,20 @@ harness-design-skill/
 ├── SKILL.md                 ← entry point (slim, ~120 lines, progressive disclosure)
 ├── references/              ← worked examples, loaded on demand
 │   ├── software_harness.md
+│   ├── software_harness_with_skills.md   ← skill-pack wiring (methodology layer)
 │   ├── knowledge_harness.md
 │   ├── operations_harness.md
 │   ├── agent_definitions.md
 │   ├── enforcement.md       ← hooks, settings.json, catastrophic-only enforcement
-│   ├── context_economy.md   ← NEW — why role separation is context sharding
-│   ├── lessons_pattern.md   ← NEW — rolling failure capture (PROGRESS.md style)
-│   └── upgrade_playbook.md  ← NEW — for existing harnesses
+│   ├── context_economy.md   ← why role separation is context sharding
+│   ├── lessons_pattern.md   ← rolling failure capture
+│   └── upgrade_playbook.md  ← for existing harnesses
 ├── evidence/                ← dated findings from real projects
 │   ├── README.md
 │   ├── 2026-04-29_finsim_audit.md
-│   └── 2026-05-08_deep_research_integration.md
+│   ├── 2026-05-08_deep_research_integration.md
+│   ├── 2026-05-15_mattpocock_vs_gstack.md
+│   └── 2026-06-05_gstack_retirement.md
 ├── evals/                   ← test harness for the skill itself
 └── CHANGELOG.md
 ```
