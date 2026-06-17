@@ -4,6 +4,35 @@ All notable changes to this skill. Updates are evidence-based — each entry cit
 
 The format is loosely based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.3.0] — 2026-06
+
+Oracle-first decision layer + correctness fixes + machine-checkable self-lint. Motivated by the 2026-06 orchestration-upgrade research (R1–R4 audits + X3 blind A/B, n=1 direction-only); every change below is backed by a machine-verified fact or multi-source evidence. Eval delta: evals.json self-lint 0 → 11 executable assertions, all green at release.
+
+### Fixed (P0 correctness)
+
+- **Hook A dead regex** (`references/enforcement.md`): the example PostToolUse regex `\tr[23]\tPASS` could never match this skill's own canonical `progress.tsv` column order (`round | scores | status` — a column apart), and its JSON double-escaping fed grep a literal backslash. Replaced with the column-pinned, POSIX-portable form `grep -E "$(printf '\tr[23]\t[^\t]*\tPASS(\t|$)')"` — verified to match a canonical r2 PASS row and reject r1 rows and FAIL rows containing "PASS" as a substring. The skill's only blocking hook now actually fires.
+- **Stale exit rule in `operations_harness.md`** ("two clean rounds = done / three repetitions = escalate") — a v0.1-retired rule that contradicted the canonical rule; v0.2.1's alignment sweep had missed it.
+
+### Added
+
+- **SKILL.md Step 1 — Choose the structure**: prequalifier (no checkable signal → no framework) + three questions (oracle? blast radius? splittability?) + four-structure routing (solo+check / pipeline / triangle / fan-out) + a "too small to harness" exit. The triangle is one structure, not the default. Frontmatter description rewritten to match; eval/experiment trigger words added.
+- **`references/structure_routing.md`** — expanded routing cases and calibration recipes; all numbers explicitly marked "examples, not quotas".
+- **Hook engineering rule** in `references/enforcement.md`: hooks live in script files for anything non-trivial, and **every hook ships with a minimal trigger self-test** (one line that must match, one that must not, assert exit codes).
+- **evals.json rewritten** from a two-versions-stale shell into 11 executable self-lint assertions (hook-must-fire incl. negative/adversarial controls, no-living-gstack-refs by tombstone-marker allowlist, exit-rule-single-source, no-phantom-pointers, decision-layer-present, enforcement-conditional) + a 7-case scenario pool with deterministic post-generation checks (generation runner deliberately not wired — deferred). The old eval#1 expectation that hardcoded worktree parallelism (contradicting our own 2026-05-08 evidence stance) is gone; splittability is now judged, not prescribed.
+- **`evals/run-evals.sh`** — runner for the self-lint assertions above (JSON-validate + execute, exit 0 = all green). This is *not* the deferred scaffold-generation runner; that one is still deliberately unwired.
+
+### Changed
+
+- **Enforcement conditional on topology** (`references/enforcement.md`): "L0–L2 are baseline for *every* harness" → baseline for triangle/fan-out; for solo+check and pipeline the L2 gate is a check command, not an agent-type QA gate. Default-agent and agent-type-Stop-hook wording conditioned the same way.
+- **Dynamic exit canonicalized**: SKILL.md's r1-PASS rule is the single source; `software_harness.md` / `knowledge_harness.md` / `operations_harness.md` now carry one-line pointers (the upgrade-playbook teaching table and the enforcement veto record are not duplicates and stay).
+- **QA calibration rewritten as intent + acceptance line + two field-tested counters** (anchored few-shot with hard per-dimension thresholds — *any dimension failing = overall FAIL, no averaging* — or a project-risk checklist judged PASS/FAIL/UNKNOWN). Numeric quotas across the prompt layer demoted to worked-example status (3-reads, ~5-sec spawn, 5-10 entries, ~50 lines/quarter, ~150 lines, 2–3 lessons, ≥3 promotions); numbers live on in `structure_routing.md` as calibration examples.
+- **gstack living references zeroed** (the v0.2.1 sweep had missed `enforcement.md` L4 and `upgrade_playbook.md` step 2): keep/remove tables, QA skill-mapping table, dead quick-reference rows and 3.5/4 anti-patterns removed from `software_harness_with_skills.md`; replaced with Playwright MCP / native-equivalent prose. Compliant tombstones (lines carrying retired/historical/evidence markers) are the allowlist and remain.
+- `agent_definitions.md`: `opus[1m]` rationale compressed to one sentence + global-rule pointer; invocation how-to compressed to three lines (named-agents accountability sentence kept).
+
+### Explicitly deferred (not in this release)
+
+- QA-no-Edit tools-field sink + the advisory-vs-enforced contradiction (needs one live spawn test). Hook A trigger re-anchoring and exit-2 level review; Hook B scripting (user decision pending). `eval_harness.md` / `experiment_harness.md` templates, dual-arm baselines, blind A/B gate (experiment-gated). knowledge narrowing / operations archival. Upgrade-playbook decision-layer channel + "NEW in v0.1" pin removal. MAINTENANCE.md.
+
 ## [0.2.1] — 2026-06-05
 
 Documentation hygiene + gstack runtime retirement. Motivated by `evidence/2026-06-05_gstack_retirement.md`: the user retired gstack entirely (closing the 05-08 → 05-10 → 05-15 → 06-05 decision chain), and a 39-agent deep-research audit of the skill + finsim_Mini found six instances of documentation drift, all line-verified before fixing.

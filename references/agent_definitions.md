@@ -30,7 +30,7 @@ mcpServers:                       # optional
 ---
 ```
 
-**Why `model: opus[1m]`**: harness agents need to hold the plan, prior reports, and domain knowledge in one context window. Opus with 1M context (`opus[1m]`) holds whole repositories. Shorter contexts force chunking that the harness principles explicitly argue against.
+**Why `model: opus[1m]`**: harness agents must hold the plan, prior reports, and domain knowledge in one window — shorter contexts force exactly the chunking these principles argue against (this user's global `~/.claude/CLAUDE.md` mandates the same rule for all project agents).
 
 **Why `acceptEdits` and not `bypassPermissions`**: `bypassPermissions` silently ignores the `tools` allow-list. If you write `tools: Read, Write` and set `bypassPermissions`, the agent will happily run `Bash` and nothing stops it. Use `acceptEdits` so the scope is actually enforced.
 
@@ -116,18 +116,4 @@ Prefer coordinator-plans until you observe specific planning failures that warra
 
 ## How agents are invoked
 
-```bash
-# Inside a coordinator session, delegate via @mention:
-@planner write a harness spec for the dashboard module
-@builder implement Phase 2 per .harness/spec.md
-@qa test the dashboard against .harness/reports/build_dashboard_r1.md
-
-# Start a standalone session as a specific agent:
-claude --agent planner
-claude --agent builder
-
-# Natural language also works (coordinator routes):
-"Add a dark-mode toggle to the settings page"
-```
-
-The coordinator delegates to *named* agents. It does not spawn anonymous ones. Named agents are the unit of accountability — each one has a file, a role, a history of reports.
+Delegate via `@mention` inside a coordinator session, start a standalone session with `claude --agent {role}`, or just use natural language — the coordinator routes it. The coordinator delegates to *named* agents, never anonymous ones: named agents are the unit of accountability — each has a file, a role, and a history of reports.

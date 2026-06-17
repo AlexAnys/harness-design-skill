@@ -24,7 +24,7 @@ This reframes everything:
 
 A useful rule of thumb derived from the finsim audit:
 
-> **If the Coordinator does more than 3 source-file Reads in a row, it's drifting into the Builder's role.**
+> **When the Coordinator needs multiple source-file Reads to answer an architecture question, it's drifting into the Builder's role — delegate.** (finsim's observed tipping point was around three Reads in a row; an observation, not a threshold.)
 
 The Edit/Write count alone isn't the signal — the signal is total bytes pulled into Coordinator's window. Reading one file then making one small Edit may be cheaper than spawning a Builder. Reading five files to figure out an architecture question is when delegation becomes the cheap option.
 
@@ -41,7 +41,7 @@ The Edit/Write count alone isn't the signal — the signal is total bytes pulled
 - Schema files (.prisma, migrations)
 - Anything that would require Reading > 1 file to understand
 
-**Default heuristic**: if unsure, spawn a Builder. Cost of spawn is ~5 sec. Cost of Coordinator context degradation is silent and cumulative — you only see it when compaction truncates the wrong early decision.
+**Default heuristic**: if unsure, spawn a Builder. Whatever a spawn costs, it is far below the silent, cumulative cost of Coordinator context degradation — you only see that one when compaction truncates the wrong early decision.
 
 ## Why long sessions concentrate the risk
 

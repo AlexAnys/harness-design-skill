@@ -75,7 +75,7 @@ Ingest → Compile → Lint ─── CLEAN → log + commit → next source
 
 Contradictions between sources aren't always "Compiler error — fix it." Sometimes the sources genuinely disagree and the wiki should say so. The linter should flag contradictions, not silently pick a winner.
 
-**Dynamic exit:** a clean compile exits the cycle — don't re-lint "just to be sure." The same lint failure twice in a row → escalate and write a lesson. (Mirrors SKILL.md's simplified r1-PASS rule; the older "two consecutive clean rounds" phrasing was retired with it.)
+**Dynamic exit:** apply SKILL.md's canonical r1-PASS rule — a clean compile exits the cycle; the same lint failure twice in a row → escalate and write a lesson.
 
 ---
 
@@ -97,4 +97,4 @@ Calibrated few-shot examples matter here too, but the dimensions are different f
 - **Schema adherence**: pages follow the CLAUDE.md-defined structure (not invented layouts)
 - **Redundancy control**: new pages don't re-state what existing pages already cover
 
-Write 3–5 few-shot examples spanning clean and broken states for these dimensions. Generic "is this well-written?" QA is useless here; domain-specific dimensions aren't.
+Write few-shot examples spanning clean and broken states for these dimensions — enough to anchor clear-fail / marginal / clear-pass. Generic "is this well-written?" QA is useless here; domain-specific dimensions aren't.
