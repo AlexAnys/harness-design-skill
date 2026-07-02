@@ -30,7 +30,7 @@ Append-only. One entry per lesson. Format:
 
 ## When to append — the only enforced rule
 
-PostToolUse hook on `git commit`: if the most recent row in `progress.tsv` is `r2|r3 PASS`, **require a new lessons.md entry dated today** before the next commit is allowed (or warn loudly, depending on enforcement appetite — see `references/enforcement.md`).
+PostToolUse hook on `git commit`: if a recent row in `progress.tsv` shows an `r2`-or-later PASS (a failure that took two or more rounds to clear), **require a lessons.md entry dated the day of that PASS** before the next commit is allowed (or warn loudly, depending on enforcement appetite — see `references/enforcement.md`).
 
 Rationale: a Failure that took two rounds to resolve is, by definition, a lesson. Letting it pass without capture is the failure mode this whole mechanism exists to prevent.
 

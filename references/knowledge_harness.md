@@ -75,7 +75,7 @@ Ingest → Compile → Lint ─── CLEAN → log + commit → next source
 
 Contradictions between sources aren't always "Compiler error — fix it." Sometimes the sources genuinely disagree and the wiki should say so. The linter should flag contradictions, not silently pick a winner.
 
-**Dynamic exit:** apply SKILL.md's canonical r1-PASS rule — a clean compile exits the cycle; the same lint failure twice in a row → escalate and write a lesson.
+**Dynamic exit:** apply SKILL.md's canonical r1-PASS rule — a clean compile exits the cycle; the same lint failure twice in a row → re-plan (here: escalate to the human) + write a lesson.
 
 ---
 

@@ -22,11 +22,9 @@
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-Runtime tooling (browser daemons, design pipelines) is introduced per-need — check Claude Code native first. That check is what retired gstack; see `evidence/2026-05-15_mattpocock_vs_gstack.md`.
+Runtime tooling (browser daemons, design pipelines) is introduced per-need — check Claude Code native first. That check is what retired the gstack pack.
 
-**Critical principle**: most prompt-template skills (`/office-hours`, `/autoplan`, `/plan-*-review`, `/investigate`, `/careful`, `/freeze`, `/ship`, `/codex`, `/learn`, `/context-save`, etc.) are **replaceable** by Claude Code native + a 50-line `.harness/` file or a few Bash lines. Keep only the skills with **unique technology** (browser daemon, Pretext layout, structured prompts you genuinely cannot reproduce by hand).
-
-The pruning rationale + evidence: `evidence/2026-05-15_mattpocock_vs_gstack.md`.
+**Critical principle**: most prompt-template skills are **replaceable** by Claude Code native + a 50-line `.harness/` file or a few Bash lines — that replaceability test is what retired the gstack pack (historical keep/remove analysis: `evidence/2026-05-15_mattpocock_vs_gstack.md`; superseded by the full retirement in `evidence/2026-06-05_gstack_retirement.md`). Keep only structured prompts or technology you genuinely cannot reproduce by hand.
 
 ---
 
@@ -39,7 +37,7 @@ bash ~/Projects/mattpocock-skills/scripts/link-skills.sh
 
 This adds 24 skills as symlinks into `~/.claude/skills/`. The script skips `deprecated/`.
 
-Where retired runtime skills had unique value, the current equivalents are: session save/restore → native `/compact` + `.harness/HANDOFF.md`; destructive-command guards → PreToolUse hooks (`references/enforcement.md`); freeform memory capture → `.harness/lessons.md`; shipping → Bash + `gh pr create` / `gh pr merge`. The full historical keep/remove analysis: `evidence/2026-05-15_mattpocock_vs_gstack.md`.
+Where retired runtime skills had unique value, the current equivalents are: session save/restore → native `/compact` + `.harness/HANDOFF.md`; destructive-command guards → PreToolUse hooks (`references/enforcement.md`); freeform memory capture → `.harness/lessons.md`; shipping → Bash + `gh pr create` / `gh pr merge`.
 
 ---
 
@@ -76,20 +74,9 @@ Browser verification = **Playwright MCP, report-only**: QA loads the real page, 
 
 ---
 
-## Blackboard updates for v0.2 (CONTEXT.md + ADRs from mattpocock)
+## Blackboard additions from /grill-with-docs (CONTEXT.md + ADRs)
 
-mattpocock's `/grill-with-docs` writes two artifacts that complement our existing blackboard:
-
-```
-.harness/
-├── spec.md          current plan (Coordinator)                       (v0.1)
-├── progress.tsv     one row per QA round                             (v0.1)
-├── HANDOFF.md       cross-session note                                (v0.1)
-├── lessons.md       rolling failure → fix → prevention                (v0.1)
-├── CONTEXT.md       domain glossary + ubiquitous language             (v0.2 NEW)
-├── docs/adr/        architectural decision records                    (v0.2 NEW)
-└── reports/         build_*.md + qa_*.md per round                   (v0.1)
-```
+The blackboard layout is canonical in SKILL.md Step 2. mattpocock's `/grill-with-docs` adds two artifacts that complement it — `CONTEXT.md` and `docs/adr/` — detailed below.
 
 **CONTEXT.md** is the project's glossary. mattpocock owns the format (terms, definitions, relationships, flagged ambiguities). Written lazily — first term to resolve triggers file creation. Devoid of implementation detail. The agent uses it to keep variable / function / file naming consistent and to spend fewer tokens explaining jargon.
 

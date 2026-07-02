@@ -20,7 +20,7 @@ Each file is a markdown document with YAML frontmatter, followed by the agent's 
 name: planner                     # short identifier, used in @mentions
 description: One sentence — when to delegate to this agent
 tools: Read, Write, Glob, Grep    # minimum necessary
-model: opus[1m]                   # 1M context for harness work
+# model: usually omitted — a global CLAUDE_CODE_SUBAGENT_MODEL override (if set) wins over this field; without one, pin your strongest long-context model
 permissionMode: acceptEdits       # NOT bypassPermissions
 mcpServers:                       # optional
   - playwright:
@@ -30,7 +30,7 @@ mcpServers:                       # optional
 ---
 ```
 
-**Why `model: opus[1m]`**: harness agents must hold the plan, prior reports, and domain knowledge in one window — shorter contexts force exactly the chunking these principles argue against (this user's global `~/.claude/CLAUDE.md` mandates the same rule for all project agents).
+**Why a 1M-context model**: harness agents must hold the plan, prior reports, and domain knowledge in one window — shorter contexts force exactly the chunking these principles argue against. (A global `CLAUDE_CODE_SUBAGENT_MODEL` setting overrides any per-agent `model:` field — one way to force a 1M-context model across every agent without editing each definition.)
 
 **Why `acceptEdits` and not `bypassPermissions`**: `bypassPermissions` silently ignores the `tools` allow-list. If you write `tools: Read, Write` and set `bypassPermissions`, the agent will happily run `Bash` and nothing stops it. Use `acceptEdits` so the scope is actually enforced.
 

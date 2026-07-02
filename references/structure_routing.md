@@ -20,7 +20,7 @@
 
 **Case 3 — triangle.** "Build the billing settings page" (subjective acceptance: layout, copy, UX) or anything touching production money paths (high radius even with tests). Planner writes spec + observable acceptance criteria; Builder implements from the spec; QA is a fresh context that runs the product against the criteria. Even inside a triangle, **every objectively checkable criterion still goes to `tests/` or a command — the QA agent only judges what can't be written as a dead rule.**
 
-**Case 4 — fan-out + judge.** "Evaluate 40 prompt variants" / multi-source research synthesis. Subjective quality, many independent units, low radius. N workers write findings to disk (light references back, not full text); an independent judge grades against a rubric the human defined. Generation ⊥ evaluation, in the wide form: N generators instead of one Builder.
+**Case 4 — fan-out + judge.** "Evaluate 40 prompt variants" / multi-source research synthesis. Subjective quality, many independent units, low radius. N workers write findings to disk (light references back, not full text); an independent judge grades against a rubric the human defined. Generation ⊥ evaluation, in the wide form: N generators instead of one Builder. Minimal files: `SCOPE.md` (rubric + unit list + spot-check rate), `run.sh` (spawns workers), `findings/` (one file per worker); role files in `.claude/agents/`: coordinator (the resident session — see SKILL.md Step 4 gate wiring) and judge; workers are sacrificial, no role files.
 
 **Hybrids.** A triangle whose build stage fans out across independent modules; a pipeline whose final stage is a triangle for the one subjective deliverable. Route each *stage* by its own signal — structures compose; the questions don't change.
 

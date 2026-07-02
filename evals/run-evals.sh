@@ -7,17 +7,22 @@
 set -u
 cd "$(dirname "$0")/.." || exit 1
 
-python3 -c "import json; json.load(open('evals/evals.json'))" || {
-  echo "evals.json: invalid JSON" >&2
+command -v python3 >/dev/null || { echo "run-evals: python3 required" >&2; exit 1; }
+
+err=$(python3 -c "import json; json.load(open('evals/evals.json'))" 2>&1) || {
+  echo "evals.json: invalid JSON — $(printf '%s' "$err" | tail -1)" >&2
   exit 1
 }
 
 python3 - <<'EOF'
 import json, subprocess, sys
 items = json.load(open('evals/evals.json'))['self_lint']
-fail = [i['id'] for i in items if subprocess.run(['bash', '-c', i['assert']]).returncode != 0]
+fail = [(i['id'], i.get('name', '')) for i in items
+        if subprocess.run(['bash', '-c', i['assert']]).returncode != 0]
 if fail:
-    print('FAIL:', fail)
+    print('FAIL:', json.dumps([f[0] for f in fail]))
+    for fid, name in fail:
+        print('  %s  %s' % (fid, name), file=sys.stderr)
     sys.exit(1)
 print('self_lint ALL GREEN (%d)' % len(items))
 EOF

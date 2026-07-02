@@ -81,7 +81,7 @@ If routing landed on the **triangle** — three roles, one blackboard, two `.cla
 ├── HANDOFF.md      ← cross-session continuity
 ├── lessons.md      ← rolling failure → fix → prevention (v0.1)
 ├── CONTEXT.md      ← domain glossary, ubiquitous language (v0.2, when /grill-with-docs is used)
-├── docs/adr/       ← architectural decision records (v0.2, three-condition rule — see below)
+├── docs/adr/       ← architectural decision records (v0.2, three-condition rule — see references/software_harness_with_skills.md)
 └── reports/        ← build_*.md + qa_*.md per round
 ```
 

@@ -1,37 +1,25 @@
 {
   "skill_name": "harness-design",
-  "rewritten": "2026-06 v0.3.0 — replaces the pre-0.1 shell (prompts with prose expectations, assertion groups anchored to dead iteration numbers, and an eval#1 expectation that hardcoded worktree parallelism against this repo's own evidence)",
-  "how_to_run_self_lint": "cd to the skill repo root; for each item run `bash -c \"<assert>\"`; exit 0 = pass. These are repo-state assertions — they run today, no scaffold generation needed.",
+  "rewritten": "2026-06 v0.3.0 — replaces the pre-0.1 shell (prose expectations, assertion groups anchored to dead iteration numbers, an eval#1 expectation that hardcoded worktree parallelism against this repo's own evidence). 2026-07-02 review pass: SL-1 now extracts and executes the shipped Hook A instead of testing a hand-copied regex; SL-2/3/4/9 hardened; 13 assertions.",
+  "how_to_run_self_lint": "cd to the skill repo root; for each item run `bash -c \"<assert>\"`; exit 0 = pass. Repo-state assertions — they run today, no scaffold generation needed. SL-1b shells out to evals/hook_a_contract.sh, which needs `jq` (the hook's own runtime dependency).",
   "self_lint": [
     {
       "id": "SL-1a",
       "principle": "hooks-must-fire",
-      "name": "enforcement.md carries the column-pinned Hook A regex",
-      "assert": "grep -qF -- '[^\\\\t]*\\\\tPASS' references/enforcement.md"
+      "name": "enforcement.md carries the full column-pinned Hook A regex verbatim (not just a substring — a re-typed copy elsewhere cannot certify the shipped one)",
+      "assert": "grep -qF -- '\\tr([2-9]|[1-9][0-9]+)\\t[^\\t]*\\tPASS(\\t|$)' references/enforcement.md"
     },
     {
       "id": "SL-1b",
       "principle": "hooks-must-fire",
-      "name": "Hook A pattern MATCHES a canonical r2 PASS row (software_harness.md column order: timestamp|unit|round|scores|status|...)",
-      "assert": "printf '2026-06-06T00:00:00Z\\tauth\\tr2\\t9/10\\tPASS\\t0.41\\tfix login\\tabc1234\\n' | grep -qE \"$(printf '\\tr[23]\\t[^\\t]*\\tPASS(\\t|$)')\""
-    },
-    {
-      "id": "SL-1c",
-      "principle": "hooks-must-fire",
-      "name": "Hook A pattern does NOT match an r1 PASS row (negative control)",
-      "assert": "! printf '2026-06-06T00:00:00Z\\tauth\\tr1\\t9/10\\tPASS\\t0.41\\tok\\tabc1234\\n' | grep -qE \"$(printf '\\tr[23]\\t[^\\t]*\\tPASS(\\t|$)')\""
-    },
-    {
-      "id": "SL-1d",
-      "principle": "hooks-must-fire",
-      "name": "Hook A pattern does NOT match a FAIL row whose description contains the substring PASS (adversarial control)",
-      "assert": "! printf '2026-06-06T00:00:00Z\\tauth\\tr2\\t3/10\\tFAIL\\t0.42\\tretry PASSword fix\\tabc1234\\n' | grep -qE \"$(printf '\\tr[23]\\t[^\\t]*\\tPASS(\\t|$)')\""
+      "name": "the SHIPPED Hook A fires end-to-end: hook_a_contract.sh extracts the script from enforcement.md and runs it against fixtures via the real stdin-JSON contract (blocks r2+ PASS w/o dated lesson, passes non-commit/fail-open/r1/adversarial-PASS-substring). Catches a phantom env var or dead regex that a string assertion cannot.",
+      "assert": "bash evals/hook_a_contract.sh"
     },
     {
       "id": "SL-2",
       "principle": "no-retired-refs",
-      "name": "zero living gstack references — including its command verbs (/qa-only, /cso), not just the literal word 'gstack' — in the prompt layer; tombstones must carry a marker word (retired/historical/evidence) on the hit line — that marker IS the allowlist",
-      "assert": "[ \"$(grep -rniE 'gstack|/qa-only|/cso' SKILL.md references/ | grep -icvE 'retired|historical|evidence')\" -eq 0 ]"
+      "name": "zero living gstack references in the prompt layer — including retired command verbs (/qa-only, $B, /cso, and the pruned prompt-template pack), not just the literal word 'gstack'; a tombstone must carry retired/historical or a path-form 'evidence/' marker on the hit line (the bare word 'evidence' is too common to be the allowlist). Verb list is drawn from the two retirement evidence files, not a single brand word.",
+      "assert": "[ \"$(grep -rniE 'gstack|/qa-only|/cso|\\$B([^A-Za-z0-9_]|$)|/careful|/freeze|/office-hours|/autoplan|/investigate|/context-save|/design-html|/design-shotgun|/skillify|/pair-agent|Pretext' SKILL.md references/ | grep -icvE 'retired|historical|evidence/')\" -eq 0 ]"
     },
     {
       "id": "SL-3",
@@ -40,10 +28,22 @@
       "assert": "[ \"$(grep -rinE 'two (consecutive )?clean rounds|consecutive[- ]PASS(es)?|2/2' SKILL.md references/ | grep -cvE 'vestigial|r1 PASS exits')\" -eq 0 ]"
     },
     {
+      "id": "SL-3b",
+      "principle": "exit-rule-single-source",
+      "name": "the canonical exit-rule body itself is present in SKILL.md (deleting it would leave the reference pointers dangling — a green-but-broken state SL-3 alone did not catch)",
+      "assert": "grep -qF 'r1 PASS exits the unit' SKILL.md"
+    },
+    {
+      "id": "SL-3c",
+      "principle": "exit-rule-single-source",
+      "name": "verbatim 'r1 PASS exits' appears exactly 3x across the prompt layer (SKILL.md canonical + software_harness.md + upgrade_playbook.md pointers) — a new verbatim copy or a deleted body both move this count. Bump the number when you add a legitimate verbatim reference.",
+      "assert": "[ \"$(grep -rF 'r1 PASS exits' SKILL.md references/ | wc -l)\" -eq 3 ]"
+    },
+    {
       "id": "SL-4",
       "principle": "no-phantom-pointers",
-      "name": "every references/*.md mentioned in SKILL.md exists on disk",
-      "assert": "for f in $(grep -o 'references/[a-z_]*\\.md' SKILL.md | sort -u); do [ -f \"$f\" ] || exit 1; done"
+      "name": "every references/*.md pointer in the prompt layer (SKILL.md + references/, hyphen/digit/upper tolerant) resolves on disk — not just the ones SKILL.md happens to mention",
+      "assert": "for f in $(grep -rho 'references/[a-zA-Z0-9_-]*\\.md' SKILL.md references/ | sort -u); do [ -f \"$f\" ] || exit 1; done"
     },
     {
       "id": "SL-5",
@@ -68,6 +68,18 @@
       "principle": "hooks-must-fire",
       "name": "the hook self-test rule is written into enforcement.md",
       "assert": "grep -qi 'trigger self-test' references/enforcement.md"
+    },
+    {
+      "id": "SL-9a",
+      "principle": "no-triangle-when-solo-oracle",
+      "name": "SKILL.md decision layer carries content, not just the words 'Question 0': the four-structure routing table (solo/fan-out named) + the three-question labels. Deleting the routing table turns this red.",
+      "assert": "grep -qF 'Solo agent + check command' SKILL.md && grep -qF 'Fan-out workers + judge' SKILL.md && grep -q 'Blast radius' SKILL.md && grep -q 'Splittability' SKILL.md"
+    },
+    {
+      "id": "SL-9b",
+      "principle": "no-triangle-when-solo-oracle",
+      "name": "structure_routing.md (v0.3 headline deliverable) is non-empty and carries its routing cases — emptying it to 0 bytes turns this red",
+      "assert": "[ -s references/structure_routing.md ] && grep -qi 'solo + check' references/structure_routing.md && grep -qi 'fan-out + judge' references/structure_routing.md"
     }
   ],
   "scenario_evals": {

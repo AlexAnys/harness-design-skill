@@ -33,7 +33,7 @@ Claude Code auto-loads skills from `~/.claude/skills/`. The skill triggers when 
 
 ```
 harness-design-skill/
-├── SKILL.md                 ← entry point (slim, ~120 lines, progressive disclosure)
+├── SKILL.md                 ← entry point (slim; routing + invariants, progressive disclosure)
 ├── references/              ← worked examples, loaded on demand
 │   ├── structure_routing.md ← Step 1 decision layer: solo/pipeline/triangle/fan-out (worked examples)
 │   ├── software_harness.md
