@@ -1,10 +1,10 @@
 # Software Harness with External Skill Packs
 
-> For software projects where mattpocock/skills (methodology) and/or gstack (runtime infrastructure) are installed. This reference shows how to wire them into the three harness roles **without bloating Coordinator context** or duplicating Claude Code native capabilities.
+> For software projects using the mattpocock methodology skills. This reference shows how to wire them into the three harness roles **without bloating Coordinator context** or duplicating Claude Code native capabilities.
 
-> **Status 2026-06-05 — gstack retired.** The user retired gstack entirely (quality + context-cost grounds; see `evidence/2026-06-05_gstack_retirement.md`). The runtime-layer sections below are kept as a **historical record** of the two-layer analysis — do not install from them. Only the **methodology layer (mattpocock) remains current**. Browser QA defaults back to Playwright MCP (`references/agent_definitions.md`); what replaces the daemon for authenticated multi-step flows is an open question tracked in the evidence file.
+> **Status 2026-06-05 — gstack retired** (quality + context-cost grounds; see `evidence/2026-06-05_gstack_retirement.md`). Only the methodology layer (mattpocock) remains current. Browser QA = Playwright MCP (`references/agent_definitions.md`); the historical two-layer keep/remove analysis lives in the evidence file, not here.
 
-## The two-layer mental model
+## The layered mental model
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -12,11 +12,6 @@
 │  mattpocock/skills · pure prompts · zero infra dependency       │
 │  /tdd /diagnose /grill-with-docs /zoom-out /to-prd /to-issues   │
 │  /improve-codebase-architecture /prototype /triage /handoff     │
-├─────────────────────────────────────────────────────────────────┤
-│  Runtime layer — what the agent can DO                          │
-│  gstack (pruned) · unique tech only                             │
-│  /browse /qa /qa-only /canary /benchmark /scrape /design-*      │
-│  /cso /pair-agent /open-gstack-browser /setup-browser-cookies   │
 ├─────────────────────────────────────────────────────────────────┤
 │  Claude Code native — already provided, do not re-install       │
 │  Read / Write / Edit / Bash / Grep / Glob / Agent / TeamCreate  │
@@ -27,49 +22,22 @@
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-**Critical principle**: most prompt-template skills (`/office-hours`, `/autoplan`, `/plan-*-review`, `/investigate`, `/careful`, `/freeze`, `/ship`, `/codex`, `/learn`, `/context-save`, etc.) are **replaceable** by Claude Code native + a 50-line `.harness/` file or a few Bash lines. Keep only the skills with **unique technology** (browser daemon, Pretext layout, structured prompts you genuinely cannot reproduce by hand).
+Runtime tooling (browser daemons, design pipelines) is introduced per-need — check Claude Code native first. That check is what retired the gstack pack.
 
-The pruning rationale + evidence: `evidence/2026-05-15_mattpocock_vs_gstack.md`.
+**Critical principle**: most prompt-template skills are **replaceable** by Claude Code native + a 50-line `.harness/` file or a few Bash lines — that replaceability test is what retired the gstack pack (historical keep/remove analysis: `evidence/2026-05-15_mattpocock_vs_gstack.md`; superseded by the full retirement in `evidence/2026-06-05_gstack_retirement.md`). Keep only structured prompts or technology you genuinely cannot reproduce by hand.
 
 ---
 
-## Recommended pruned install
-
-### Keep from gstack (~16 skills) — these have non-replicable tech
-
-| Skill | Why keep |
-|---|---|
-| `/browse` `/scrape` `/skillify` | persistent Chromium daemon, ~100ms latency, anti-bot stealth, cookie import |
-| `/qa` `/qa-only` | structured browser-testing flow on top of `/browse`, daemon-fast |
-| `/canary` `/benchmark` | post-deploy monitoring via daemon, Core Web Vitals |
-| `/cso` | OWASP+STRIDE audit with 17 false-positive exclusions, 8/10 confidence gate, finding verification |
-| `/design-shotgun` `/design-html` `/design-review` `/design-consultation` | Pretext computed layout, multi-variant generation board, taste learning |
-| `/connect-chrome` `/open-gstack-browser` `/setup-browser-cookies` `/pair-agent` | browse adjuncts: real-Chrome bridging, cookie auth, multi-agent share |
-
-### Remove from gstack (~29 skills) — Claude Code native or mattpocock covers them
-
-| Removed | Replacement |
-|---|---|
-| `/office-hours` `/autoplan` `/plan-*-review` | mattpocock `/grill-with-docs` (engineering domain) + Coordinator judgment |
-| `/investigate` | mattpocock `/diagnose` (significantly higher quality methodology) |
-| `/careful` `/freeze` `/guard` `/unfreeze` | Claude Code PreToolUse hooks (see `references/enforcement.md`) |
-| `/learn` `/sync-gbrain` `/setup-gbrain` | `.harness/lessons.md` (see `references/lessons_pattern.md`) + native `~/.claude/CLAUDE.md` |
-| `/context-save` `/context-restore` | Claude Code native `/compact` + `.harness/HANDOFF.md` |
-| `/ship` `/land-and-deploy` `/setup-deploy` `/landing-report` | Bash + `gh pr create` / `gh pr merge` |
-| `/codex` | Bash + `codex exec --full-auto` |
-| `/document-release` `/retro` | pure prompts — write what you need ad-hoc |
-| `/health` `/benchmark-models` `/gstack-upgrade` | niche, can be Bash one-liners when needed |
-| `/devex-review` `/plan-devex-review` `/plan-tune` `/make-pdf` | rarely-used prompts; reach for them only if needed |
-| `/review` (gstack) | mattpocock `/review` (in-progress) or just Bash + `git diff` |
-
-### Install mattpocock fully
+## Methodology install (mattpocock)
 
 ```bash
 git clone https://github.com/mattpocock/skills.git ~/Projects/mattpocock-skills
 bash ~/Projects/mattpocock-skills/scripts/link-skills.sh
 ```
 
-This adds 24 skills as symlinks into `~/.claude/skills/`. The script skips `deprecated/`. Skill name collisions (`tdd`, `to-prd`, etc.) resolve to mattpocock because its top-level symlink wins over gstack's subdirectory entries.
+This adds 24 skills as symlinks into `~/.claude/skills/`. The script skips `deprecated/`.
+
+Where retired runtime skills had unique value, the current equivalents are: session save/restore → native `/compact` + `.harness/HANDOFF.md`; destructive-command guards → PreToolUse hooks (`references/enforcement.md`); freeform memory capture → `.harness/lessons.md`; shipping → Bash + `gh pr create` / `gh pr merge`.
 
 ---
 
@@ -86,7 +54,7 @@ This adds 24 skills as symlinks into `~/.claude/skills/`. The script skips `depr
 | Session getting long, save state | Claude Code native `/compact` + update `.harness/HANDOFF.md` |
 | Long-session token costs spiking | mattpocock `/caveman` — ultra-compressed communication mode |
 
-Coordinator does **NOT** invoke runtime-layer skills directly — those are Builder/QA's job. Coordinator stays in methodology + planning + delegation.
+Coordinator stays in methodology + planning + delegation — execution-flavored skills run in Builder/QA contexts, not here.
 
 ### Builder (sacrificial context, gets work done)
 
@@ -96,40 +64,19 @@ Coordinator does **NOT** invoke runtime-layer skills directly — those are Buil
 | Bug or perf regression | mattpocock `/diagnose` — feedback-loop-first, 6-phase discipline |
 | Confused about a module | mattpocock `/zoom-out` — explain in context of the whole system |
 | Want to try a design before committing | mattpocock `/prototype` — throwaway prototype, terminal or UI variant |
-| UI to build from a mockup | gstack `/design-html` |
-| Need to explore UI options first | gstack `/design-shotgun` |
 | Quarterly cleanup pass | mattpocock `/improve-codebase-architecture` |
 
 Builder owns the inner loop. Use `/tdd` / `/diagnose` as the **default** for non-trivial work — they enforce vertical slicing and feedback loops that drive quality.
 
 ### QA (sacrificial context, independent verification)
 
-| Trigger | Skill to invoke |
-|---|---|
-| UI / routing / CSS change | gstack `/qa-only` — real browser, daemon-fast, report-only |
-| Auth / permission / payment change | gstack `/cso` — OWASP+STRIDE audit, High/Critical = FAIL |
-| Visual polish PR | gstack `/design-review` — designer's eye, AI slop detection |
-| Perf-sensitive PR | gstack `/benchmark` — Core Web Vitals before/after |
-| Post-deploy health | gstack `/canary` |
-
-QA **never edits source code**. If `/cso` or `/qa-only` finds issues, QA writes them to `qa_*.md` and SendMessage's Builder.
+Browser verification = **Playwright MCP, report-only**: QA loads the real page, exercises the flow, captures screenshots / console output as evidence. Security-sensitive changes (auth / permissions / payments) → native `/security-review` or a human pass. QA **never edits source code** — findings go to `qa_*.md`, then SendMessage to Builder.
 
 ---
 
-## Blackboard updates for v0.2 (CONTEXT.md + ADRs from mattpocock)
+## Blackboard additions from /grill-with-docs (CONTEXT.md + ADRs)
 
-mattpocock's `/grill-with-docs` writes two artifacts that complement our existing blackboard:
-
-```
-.harness/
-├── spec.md          current plan (Coordinator)                       (v0.1)
-├── progress.tsv     one row per QA round                             (v0.1)
-├── HANDOFF.md       cross-session note                                (v0.1)
-├── lessons.md       rolling failure → fix → prevention                (v0.1)
-├── CONTEXT.md       domain glossary + ubiquitous language             (v0.2 NEW)
-├── docs/adr/        architectural decision records                    (v0.2 NEW)
-└── reports/         build_*.md + qa_*.md per round                   (v0.1)
-```
+The blackboard layout is canonical in SKILL.md Step 2. mattpocock's `/grill-with-docs` adds two artifacts that complement it — `CONTEXT.md` and `docs/adr/` — detailed below.
 
 **CONTEXT.md** is the project's glossary. mattpocock owns the format (terms, definitions, relationships, flagged ambiguities). Written lazily — first term to resolve triggers file creation. Devoid of implementation detail. The agent uses it to keep variable / function / file naming consistent and to spend fewer tokens explaining jargon.
 
@@ -150,42 +97,25 @@ These are non-overlapping. A new lesson never goes into CONTEXT.md; a domain ter
 
 ---
 
-## When to skip the runtime layer
+## When browser verification applies
 
-The runtime layer (gstack-kept) is valuable for **web-app / UI / browser-flow** projects. Skip it for:
+Real-browser QA (Playwright MCP) is for **web-app / UI / browser-flow** projects. Skip it for:
 
-- **Native desktop apps** — no browser, no `/qa-only`, no `/canary`
-- **CLI tools / SDKs / libraries** — methodology layer is enough
-- **Backend-only services** with no UI — `/cso` for security still applies; rest of runtime layer doesn't
-- **Knowledge / research projects** — neither layer applies; lean on Coordinator/Builder/QA + blackboard alone
+- **Native desktop apps** — no browser surface; QA runs the app directly
+- **CLI tools / SDKs / libraries** — invoke and diff outputs; the methodology layer is enough
+- **Backend-only services** — exercise the API; security review via native `/security-review` or human pass
+- **Knowledge / research projects** — lean on roles + blackboard alone
 
-Trying to force the runtime layer onto a non-web project just creates ceremony. The methodology layer (mattpocock) is universally useful.
-
----
-
-## Anti-patterns observed
-
-1. **Coordinator runs `/office-hours` in main context** — the 6 forcing-question interview accumulates in Coordinator's window. Prefer mattpocock `/grill-with-docs` (more terse + ADR-driven) or a fresh sub-session.
-2. **Installing all of gstack "just in case"** — drags in ~60 skills, most of which duplicate Claude Code native. Audit and prune (see "Recommended pruned install" above).
-3. **Treating gstack's `/learn` and our `lessons.md` as the same** — `/learn` is freeform memory; `lessons.md` is structured failure capture. Use one, not both (we recommend `lessons.md`).
-4. **Using `/investigate` when `/diagnose` is installed** — finsim audit comparison showed mattpocock `/diagnose` significantly higher quality methodology (10 explicit feedback-loop construction strategies, perf vs logic branch separation, regression-test seam discipline). Default to `/diagnose`.
+Forcing browser tooling onto a non-web project just creates ceremony. The methodology layer (mattpocock) is universally useful.
 
 ---
 
-## Quick reference card
+## Anti-pattern observed
 
-| I'm about to ... | I should run ... |
-|---|---|
-| Spec a new feature | `/grill-with-docs` then write `spec.md` |
-| Write the code | `/tdd` |
-| Debug a hard bug | `/diagnose` |
-| Get a wide view of unfamiliar code | `/zoom-out` |
-| Convert this discussion into a PRD | `/to-prd` |
-| Break the PRD into issues | `/to-issues` |
-| Test a UI change in a real browser | `/qa-only` |
-| Audit an auth-related change | `/cso` |
-| Explore UI options before committing | `/design-shotgun` |
-| Turn approved mockup into HTML | `/design-html` |
-| Quarterly architecture cleanup | `/improve-codebase-architecture` |
-| Ship the PR | Bash + `gh pr create` (no skill needed) |
-| Save session state | `/compact` + update `HANDOFF.md` |
+**Don't run long interview-style skills in the Coordinator's main context** — a multi-question forcing interview accumulates in the Coordinator's window (context economy). Run `/grill-with-docs` early while the window is fresh, or in a separate session. (Three earlier anti-patterns referenced retired gstack-era skills and were removed with the retirement.)
+
+---
+
+## Defaults in one breath
+
+Builder: `/tdd` for new features, `/diagnose` for bugs — the default for non-trivial work. Coordinator: `/grill-with-docs` to grind the spec, `/to-prd` / `/to-issues` for handoff, native `/compact` + `HANDOFF.md` to save state. QA: Playwright MCP, report-only. Shipping: Bash + `gh pr create` — no skill needed. Trust skill descriptions for anything else; CC routes on them.

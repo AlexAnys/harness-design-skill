@@ -30,7 +30,7 @@ Append-only. One entry per lesson. Format:
 
 ## When to append — the only enforced rule
 
-PostToolUse hook on `git commit`: if the most recent row in `progress.tsv` is `r2|r3 PASS`, **require a new lessons.md entry dated today** before the next commit is allowed (or warn loudly, depending on enforcement appetite — see `references/enforcement.md`).
+PostToolUse hook on `git commit`: if a recent row in `progress.tsv` shows an `r2`-or-later PASS (a failure that took two or more rounds to clear), **require a lessons.md entry dated the day of that PASS** before the next commit is allowed (or warn loudly, depending on enforcement appetite — see `references/enforcement.md`).
 
 Rationale: a Failure that took two rounds to resolve is, by definition, a lesson. Letting it pass without capture is the failure mode this whole mechanism exists to prevent.
 
@@ -44,7 +44,7 @@ Rationale: a Failure that took two rounds to resolve is, by definition, a lesson
 
 ## Promotion path — lessons → static rules
 
-When a single lesson is triggered (matched, referenced, or re-prevented) **≥ 3 times across different units**, promote it:
+When a single lesson keeps recurring across different units — it has shown generality, not coincidence — promote it (finsim's heuristic was 3 triggers; an example, not a quota):
 
 1. Copy its essence into `CLAUDE.md` "Gotchas" or `qa.md` "Calibration" section as a permanent check.
 2. Mark the original lesson `superseded-by-static-rule` and link the static rule.
@@ -67,7 +67,7 @@ If your project has had failures that weren't captured, seed `lessons.md` with t
 ## L-001 · 2026-04-22 · schedule.service include missing semesterStartDate
 - Symptom: "本周" tab empty; tsc passes; 41 tests pass; runtime renders blank
 - Root cause: `prisma.schedule.findMany` include omitted `semesterStartDate`; CLAUDE.md "Prisma Gotchas" had warned about this exact pattern but the warning was static and not enforced
-- Detection: QA must run /qa-only browser load; `$B console` should show no "cannot read property of undefined"
+- Detection: QA must do a real browser load (Playwright MCP); the browser console should show no "cannot read property of undefined"
 - Prevention: qa.md calibration list (promotion candidate after one more occurrence)
 - Commit: <pr-calendar-1-r2>
 - Status: superseded-by-static-rule (CLAUDE.md "Prisma Gotchas" — 已多次导致 500 错误)
@@ -83,9 +83,9 @@ If your project has had failures that weren't captured, seed `lessons.md` with t
 
 ## Where lessons.md sits in the agent flow
 
-- **Coordinator** reads the tail when planning (last 5-10 entries) to surface relevant prior failures before writing the spec.
+- **Coordinator** reads the recent tail when planning to surface relevant prior failures before writing the spec.
 - **Builder** reads it for the unit being implemented (grep by file path, by error pattern) to avoid known traps.
 - **QA** reads it as part of the verification checklist — "have any active lessons been re-triggered by this change?"
 - The PostToolUse hook ensures the file actually gets written; the agents ensure it gets read.
 
-The file is small (~50 lines per quarter for a moderately active project) and high-density. It is the cheapest possible mechanism for "don't make the same mistake twice."
+The file stays small and high-density. It is the cheapest possible mechanism for "don't make the same mistake twice."

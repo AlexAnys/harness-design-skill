@@ -56,7 +56,7 @@ Detect → Classify → Execute → Verify ─── PASS → record → next it
                                        periodically → extract patterns → update prompts
 ```
 
-The loop doesn't terminate on its own. Only a human decision stops it, or a degradation signal auto-pauses it. But within that never-stop outer loop, individual items still follow the Plan→Execute→Verify pattern, and individual items still use dynamic exit — two clean rounds on an item = done, three repetitions of the same failure = escalate.
+The loop doesn't terminate on its own. Only a human decision stops it, or a degradation signal auto-pauses it. But within that never-stop outer loop, individual items still follow the Plan→Execute→Verify pattern, and each item exits by SKILL.md's canonical rule (r1 PASS = item done; same failure twice → re-plan (here: escalate to the human) + lesson).
 
 **Frontier tracking is essential here.** Unlike a one-off software build, operations harnesses have hundreds or thousands of data points. You need a signal for "is the frontier trending up?" — e.g., verified acceptance rate over the last N items. If the trend is flat, the experience layer isn't compounding; dig in.
 

@@ -1,0 +1,14 @@
+name: evals
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  self-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      # python3 and jq are preinstalled on ubuntu-latest; the hook contract test needs both.
+      - run: python3 --version && jq --version
+      - run: bash evals/run-evals.sh

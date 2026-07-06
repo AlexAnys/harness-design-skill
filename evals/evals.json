@@ -1,29 +1,160 @@
 {
   "skill_name": "harness-design",
-  "evals": [
+  "rewritten": "2026-06 v0.3.0 — replaces the pre-0.1 shell (prose expectations, assertion groups anchored to dead iteration numbers, an eval#1 expectation that hardcoded worktree parallelism against this repo's own evidence). 2026-07-02 review pass: SL-1 now extracts and executes the shipped Hook A instead of testing a hand-copied regex; SL-2/3/4/9 hardened; 13 assertions.",
+  "how_to_run_self_lint": "cd to the skill repo root; for each item run `bash -c \"<assert>\"`; exit 0 = pass. Repo-state assertions — they run today, no scaffold generation needed. SL-1b shells out to evals/hook_a_contract.sh, which needs `jq` (the hook's own runtime dependency).",
+  "self_lint": [
     {
-      "id": 1,
-      "prompt": "I want to rebuild my Next.js dashboard app from scratch. It has 6 modules and I want to use multiple Claude Code agents to build it. The modules are independent so they shouldn't import from each other. How should I set this up?",
-      "expected_output": "Design a Project-scale software harness with Planner/Builder/QA, worktree parallelism for independent modules, Playwright QA, and principle-level new behaviors (baseline first, model-upgrade review, dynamic exit, no sprint language, no hardcoded ceremony table).",
-      "files": []
+      "id": "SL-1a",
+      "principle": "hooks-must-fire",
+      "name": "enforcement.md carries the full column-pinned Hook A regex verbatim (not just a substring — a re-typed copy elsewhere cannot certify the shipped one)",
+      "assert": "grep -qF -- '\\tr([2-9]|[1-9][0-9]+)\\t[^\\t]*\\tPASS(\\t|$)' references/enforcement.md"
     },
     {
-      "id": 2,
-      "prompt": "I have a GitHub repo with 200+ issues and I want an AI agent workflow that automatically triages new issues, labels them, finds similar past issues, and suggests fixes based on how similar issues were resolved before. This should run continuously.",
-      "expected_output": "Design a continuous Operations harness with coordinator/executor/monitor, experience layer (low + high level), domain-specific failure modes, source immutability for issue stream, minimum-scaffolding-first approach, and principle-level new behaviors.",
-      "files": []
+      "id": "SL-1b",
+      "principle": "hooks-must-fire",
+      "name": "the SHIPPED Hook A fires end-to-end: hook_a_contract.sh extracts the script from enforcement.md and runs it against fixtures via the real stdin-JSON contract (blocks r2+ PASS w/o dated lesson, passes non-commit/fail-open/r1/adversarial-PASS-substring). Catches a phantom env var or dead regex that a string assertion cannot.",
+      "assert": "bash evals/hook_a_contract.sh"
     },
     {
-      "id": 3,
-      "prompt": "Help me set up a harness to develop a browser extension. It's a Chrome extension with popup UI, background service worker, and content scripts. I want good QA because browser extensions are hard to test.",
-      "expected_output": "Design a software harness with domain research on Chrome extension pitfalls, units of work per extension surface, QA strategy addressing manifest/service-worker/content-script challenges, calibrated verifier, and principle-level new behaviors.",
-      "files": []
+      "id": "SL-2",
+      "principle": "no-retired-refs",
+      "name": "zero living gstack references in the prompt layer — including retired command verbs (/qa-only, $B, /cso, and the pruned prompt-template pack), not just the literal word 'gstack'; a tombstone must carry retired/historical or a path-form 'evidence/' marker on the hit line (the bare word 'evidence' is too common to be the allowlist). Verb list is drawn from the two retirement evidence files, not a single brand word.",
+      "assert": "[ \"$(grep -rniE 'gstack|/qa-only|/cso|\\$B([^A-Za-z0-9_]|$)|/careful|/freeze|/office-hours|/autoplan|/investigate|/context-save|/design-html|/design-shotgun|/skillify|/pair-agent|Pretext' SKILL.md references/ | grep -icvE 'retired|historical|evidence/')\" -eq 0 ]"
+    },
+    {
+      "id": "SL-3",
+      "principle": "exit-rule-single-source",
+      "name": "old 2/2-PASS exit rule appears only as deprecation/veto/teaching records (lines carrying 'vestigial' or 'r1 PASS exits'); no living restatement",
+      "assert": "[ \"$(grep -rinE 'two (consecutive )?clean rounds|consecutive[- ]PASS(es)?|2/2' SKILL.md references/ | grep -cvE 'vestigial|r1 PASS exits')\" -eq 0 ]"
+    },
+    {
+      "id": "SL-3b",
+      "principle": "exit-rule-single-source",
+      "name": "the canonical exit-rule body itself is present in SKILL.md (deleting it would leave the reference pointers dangling — a green-but-broken state SL-3 alone did not catch)",
+      "assert": "grep -qF 'r1 PASS exits the unit' SKILL.md"
+    },
+    {
+      "id": "SL-3c",
+      "principle": "exit-rule-single-source",
+      "name": "verbatim 'r1 PASS exits' appears exactly 3x across the prompt layer (SKILL.md canonical + software_harness.md + upgrade_playbook.md pointers) — a new verbatim copy or a deleted body both move this count. Bump the number when you add a legitimate verbatim reference.",
+      "assert": "[ \"$(grep -rF 'r1 PASS exits' SKILL.md references/ | wc -l)\" -eq 3 ]"
+    },
+    {
+      "id": "SL-4",
+      "principle": "no-phantom-pointers",
+      "name": "every references/*.md pointer in the prompt layer (SKILL.md + references/, hyphen/digit/upper tolerant) resolves on disk — not just the ones SKILL.md happens to mention",
+      "assert": "for f in $(grep -rho 'references/[a-zA-Z0-9_-]*\\.md' SKILL.md references/ | sort -u); do [ -f \"$f\" ] || exit 1; done"
+    },
+    {
+      "id": "SL-5",
+      "principle": "no-triangle-when-solo-oracle",
+      "name": "SKILL.md carries the decision layer: prequalifier + structure routing reference",
+      "assert": "grep -q 'Question 0' SKILL.md && grep -q 'structure_routing.md' SKILL.md"
+    },
+    {
+      "id": "SL-6",
+      "principle": "no-triangle-when-solo-oracle",
+      "name": "frontmatter description routes by verification signal; old triple-triangle identity string absent",
+      "assert": "grep -qF 'one structure, not the default' SKILL.md && ! grep -qF 'software (Planner → Builder → QA), knowledge compilation' SKILL.md"
+    },
+    {
+      "id": "SL-7",
+      "principle": "enforcement-conditional-on-structure",
+      "name": "enforcement baseline is conditional on topology, not 'every harness'",
+      "assert": "grep -qF 'baseline for triangle / fan-out structures' references/enforcement.md && ! grep -qF 'baseline for every harness' references/enforcement.md"
+    },
+    {
+      "id": "SL-8",
+      "principle": "hooks-must-fire",
+      "name": "the hook self-test rule is written into enforcement.md",
+      "assert": "grep -qi 'trigger self-test' references/enforcement.md"
+    },
+    {
+      "id": "SL-9a",
+      "principle": "no-triangle-when-solo-oracle",
+      "name": "SKILL.md decision layer carries content, not just the words 'Question 0': the four-structure routing table (solo/fan-out named) + the three-question labels. Deleting the routing table turns this red.",
+      "assert": "grep -qF 'Solo agent + check command' SKILL.md && grep -qF 'Fan-out workers + judge' SKILL.md && grep -q 'Blast radius' SKILL.md && grep -q 'Splittability' SKILL.md"
+    },
+    {
+      "id": "SL-9b",
+      "principle": "no-triangle-when-solo-oracle",
+      "name": "structure_routing.md (v0.3 headline deliverable) is non-empty and carries its routing cases — emptying it to 0 bytes turns this red",
+      "assert": "[ -s references/structure_routing.md ] && grep -qi 'solo + check' references/structure_routing.md && grep -qi 'fan-out + judge' references/structure_routing.md"
     }
   ],
-  "assertion_groups": {
-    "retained": "Behaviors from iteration-2 that must still pass after the refactor",
-    "retained-specific": "Domain-specific retained behaviors",
-    "new-principle": "Behaviors added by the iteration-3 refactor (new skill should pass, old skill likely fails)",
-    "new-principle-negative": "Absence checks — new skill should NOT contain old template language"
-  }
+  "scenario_evals": {
+    "status": "requires_generation_run — these need a scaffold-generation harness (runner) which is NOT wired in v0.3.0; dual-arm baselines and blind A/B were explicitly deferred. The deterministic_checks below run against a generated scaffold directory once a runner exists.",
+    "cases": [
+      {
+        "id": "SE-001",
+        "scenario": "soft / control",
+        "prompt": "I'm building a teaching SaaS (multi-tenant web app: lesson planning, student dashboards, billing). Subjective UX acceptance matters and billing touches real money. Set up an agent harness for the build.",
+        "expected": "Routes to the triangle (subjective verdicts + high blast radius on billing). Objectively checkable criteria still sink to tests/commands.",
+        "deterministic_checks": [
+          "ls .claude/agents/ | grep -qi qa",
+          "! grep -rqi 'two clean rounds' .claude/ .harness/ 2>/dev/null"
+        ]
+      },
+      {
+        "id": "SE-002",
+        "scenario": "eval matrix (X3-eval class)",
+        "prompt": "I want a personal eval matrix: run my prompt set against a few model configs, score outputs against fixtures, and track regressions. Reversible, fully scriptable scoring.",
+        "expected": "Does NOT scaffold a resident triangle or blocking hooks; solo or fan-out with an external-oracle check command.",
+        "deterministic_checks": [
+          "[ ! -d .claude/agents ] || [ \"$(ls .claude/agents | wc -l)\" -le 1 ]",
+          "! grep -rq 'exit 2' .claude/settings.json 2>/dev/null",
+          "ls check.sh run.sh 2>/dev/null | grep -q ."
+        ]
+      },
+      {
+        "id": "SE-003",
+        "scenario": "optimization loop (X3-exp class)",
+        "prompt": "Set up an experiment loop that mutates a config, runs a benchmark command, keeps improvements and reverts regressions, until a time budget runs out.",
+        "expected": "Generate ⊥ Evaluate mapped to act-vs-check-command; explicit frontier metric and stop line; no QA agent.",
+        "deterministic_checks": [
+          "grep -rqil 'stop' GOAL.md EXPERIMENT.md 2>/dev/null | grep -q .",
+          "! ls .claude/agents/qa.md 2>/dev/null"
+        ]
+      },
+      {
+        "id": "SE-004",
+        "scenario": "knowledge compilation",
+        "prompt": "I have 50 source documents and want an agent workflow that compiles them into a cross-linked wiki and keeps it healthy.",
+        "expected": "wiki-as-blackboard; deterministic health checks (broken links, orphans) sink to a command, not an agent.",
+        "deterministic_checks": [
+          "ls linkcheck.sh check.sh 2>/dev/null | grep -q . || grep -rqi 'link.*check' *.md 2>/dev/null"
+        ]
+      },
+      {
+        "id": "SE-005",
+        "scenario": "upgrade mode",
+        "prompt": "(fixture: an existing harness whose files recommend gstack /qa-only, use the 'two clean rounds' exit rule, and run a full triangle on an oracle-closed solo task) Upgrade this harness without breaking it.",
+        "expected": "Non-invasive diff; retired-tool references cleared; stale exit rule aligned to the canonical r1-PASS rule; topology re-judged against the three questions.",
+        "deterministic_checks": [
+          "! grep -rqi 'gstack' upgraded/ 2>/dev/null || grep -rqi 'retired' upgraded/",
+          "! grep -rqi 'two clean rounds' upgraded/ 2>/dev/null"
+        ]
+      },
+      {
+        "id": "SE-006",
+        "scenario": "prequalifier rejection",
+        "prompt": "Set up a multi-agent harness to decide our product strategy and team priorities for next quarter.",
+        "expected": "Declines to scaffold: no consistently checkable success signal exists. Recommends human-led work; offers to revisit if a checkable sub-goal emerges.",
+        "deterministic_checks": [
+          "[ ! -d .claude/agents ]",
+          "[ ! -d .harness ]"
+        ]
+      },
+      {
+        "id": "SE-007",
+        "scenario": "too-small exit",
+        "prompt": "Rename a config key across this repo; `npm test` already covers everything it touches. Should I set up a harness first?",
+        "expected": "Says no scaffold — single session + existing check command; do the task, run the check.",
+        "deterministic_checks": [
+          "[ ! -d .claude/agents ]"
+        ]
+      }
+    ]
+  },
+  "observed_not_gated": "file count and hook count of generated scaffolds are logged as observations only — no pass/fail threshold (Goodhart guard)."
 }

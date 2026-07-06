@@ -26,7 +26,7 @@ Read CLAUDE.md to determine:
 - **Knowledge / research** (wiki, dataset compilation, doc generation)
 - **Operations** (continuous-loop, ops automation)
 
-Software projects benefit from gstack browser verification; knowledge/ops projects usually don't.
+Software projects with a UI benefit from real-browser verification (Playwright MCP, report-only); knowledge/ops projects usually don't.
 
 ### 3. Run the four-question diff
 
@@ -37,7 +37,7 @@ For each existing agent file, ask:
 | Does the role file fit one of the three principles (Plan / Execute / Evaluate)? | Flag as scaffolding-creep; recommend deprecation | Keep |
 | Does the role have a clear handoff contract (which files it reads/writes)? | Add a "Blackboard contract" section | Keep |
 | Does the role's `tools:` allocation match its function? | Update; note that current Claude Code is advisory on this field | Keep |
-| Is the role's instruction body under ~150 lines? | Prune; move detail to references or `lessons.md` | Keep |
+| Does the role's instruction body fit in about two screens? | Prune; move detail to references or `lessons.md` | Keep |
 
 ### 4. Check the blackboard
 
@@ -49,7 +49,7 @@ Required files:
 - [ ] `.harness/reports/` — build / qa reports
 - [ ] `.harness/lessons.md` — **NEW in v0.1**, often missing in existing harnesses
 
-If `lessons.md` is missing, this is the highest-ROI addition. Seed it retroactively from any past r2+ PASS entries in `progress.tsv` (search for previous failures + commits, write at least 2–3 historical lessons).
+If `lessons.md` is missing, this is the highest-ROI addition. Seed it retroactively from past r2+ PASS entries in `progress.tsv` (search for previous failures + commits, write up the historical lessons they surface).
 
 ### 5. Check settings.json
 

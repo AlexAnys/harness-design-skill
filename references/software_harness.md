@@ -36,6 +36,7 @@ The coordinator, if present, aligns intent with the user and hands the plan to t
   spec.md                          ← plan ground-truth (who, what, done criteria)
   progress.tsv                     ← one row per verify round; enables "did this round beat the last?"
   HANDOFF.md                       ← session-continuation note (last-done, next-step, open decisions)
+  lessons.md                       ← rolling failure → fix → prevention (see references/lessons_pattern.md)
   contracts/
     {unit}.md                      ← acceptance alignment between Builder and QA, written before work starts
   reports/
@@ -50,6 +51,7 @@ The file names here are not magic. What matters:
 - **`progress.tsv`** lets you answer "is the frontier advancing?" across rounds. Example columns:
   `timestamp | unit | round | scores | status | cost_usd | description | git_commit`
 - **`HANDOFF.md`** is updated at the end of every session so the next session starts with full context from a short read.
+- **`lessons.md`** feeds Hook A (`references/enforcement.md`) and the re-plan branch of the control loop — a failure that took two rounds to clear gets written down before the next commit.
 - **`contracts/{unit}.md`** is only written when the unit is complex enough that "done" isn't obvious from `spec.md`. Most units don't need one — only when QA and Builder would otherwise disagree on acceptance.
 - Reports live in a per-round structure so patterns are visible over time. Appending to a single file destroys that signal.
 
@@ -72,9 +74,7 @@ Plan → Build → Verify ─── PASS → git commit → next unit
                                     └─ YES → spec / approach is wrong, re-plan
 ```
 
-**Dynamic exit** (aligned with SKILL.md's simplified rule — the old "two consecutive PASS" version had a 3% real trigger rate in finsim and was retired):
-- r1 PASS → commit and move on. Don't run an extra round "just to be sure."
-- The same failure twice in a row → stop fixing and re-plan, then write a lesson. The spec is wrong, or the approach is wrong, or there's a hidden dependency nobody modeled.
+**Dynamic exit:** apply SKILL.md's canonical rule (r1 PASS exits the unit; same fail twice → re-plan + lesson). The loop diagram above already encodes the FAIL branch.
 
 **Keep / discard:**
 - PASS → `git commit` with a descriptive message. Frontier advances.
@@ -85,12 +85,12 @@ Plan → Build → Verify ─── PASS → git commit → next unit
 
 ## QA calibration (essential)
 
-An uncalibrated QA is systematically lenient — this is measurable, not theoretical. Calibration means:
+An uncalibrated QA is systematically lenient — a known failure mode (the 2026-06 soft-oracle pilot found rubric+gold judges reliable as a pass/fail gate but a weak *ranking* instrument, a scoring ceiling; see `evidence/2026-06-17_orchestration_upgrade.md`). Counter it with one of two field-tested approaches:
 
-1. **Few-shot examples**: 3–5 sample reports, each with a known verdict, covering clear-fail, marginal, and clear-pass cases. The QA prompt reads these to anchor its scoring.
-2. **Per-dimension hard thresholds**: break quality into named dimensions (e.g. "loads without errors," "matches visual spec," "handles empty state," "no console errors"). Each has an explicit pass threshold. Any dimension failing = overall fails. *No averaging.*
-3. **Domain-specific failure modes**: from the domain research step, inject a list of known pitfalls for this kind of project. "Check that the popup correctly reloads after background-script restart" is the kind of specific thing generic QA misses.
-4. **Positive framing**: "When you find an issue, that's you doing your job well." This counteracts the self-persuasion pull toward declaring things fine.
+- **(a) Anchored few-shot examples** with known verdicts covering clear-fail / marginal / clear-pass — count set by project (finsim used 3–5) — plus per-dimension hard thresholds: break quality into named dimensions, each with an explicit pass bar. **Any dimension failing = overall FAIL. No averaging.**
+- **(b) A project-risk checklist judged item-by-item PASS/FAIL/UNKNOWN** — list the risks that actually apply to *this* project and force an explicit verdict on each (this rewrite once caught a real LAN exposure that the template version missed — see `evidence/2026-06-17_orchestration_upgrade.md`, case P3-04).
+
+Domain-specific failure modes from the domain research step go into whichever form you pick — "check that the popup correctly reloads after background-script restart" is the kind of specific thing generic QA misses. Positive framing ("finding an issue = doing your job well") is a technique some setups found useful, not a rule.
 
 ---
 

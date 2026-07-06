@@ -20,7 +20,7 @@ Each file is a markdown document with YAML frontmatter, followed by the agent's 
 name: planner                     # short identifier, used in @mentions
 description: One sentence — when to delegate to this agent
 tools: Read, Write, Glob, Grep    # minimum necessary
-model: opus[1m]                   # 1M context for harness work
+# model: usually omitted — a global CLAUDE_CODE_SUBAGENT_MODEL override (if set) wins over this field; without one, pin your strongest long-context model
 permissionMode: acceptEdits       # NOT bypassPermissions
 mcpServers:                       # optional
   - playwright:
@@ -30,7 +30,7 @@ mcpServers:                       # optional
 ---
 ```
 
-**Why `model: opus[1m]`**: harness agents need to hold the plan, prior reports, and domain knowledge in one context window. Opus with 1M context (`opus[1m]`) holds whole repositories. Shorter contexts force chunking that the harness principles explicitly argue against.
+**Why a 1M-context model**: harness agents must hold the plan, prior reports, and domain knowledge in one window — shorter contexts force exactly the chunking these principles argue against. (A global `CLAUDE_CODE_SUBAGENT_MODEL` setting overrides any per-agent `model:` field — one way to force a 1M-context model across every agent without editing each definition.)
 
 **Why `acceptEdits` and not `bypassPermissions`**: `bypassPermissions` silently ignores the `tools` allow-list. If you write `tools: Read, Write` and set `bypassPermissions`, the agent will happily run `Bash` and nothing stops it. Use `acceptEdits` so the scope is actually enforced.
 
@@ -116,18 +116,4 @@ Prefer coordinator-plans until you observe specific planning failures that warra
 
 ## How agents are invoked
 
-```bash
-# Inside a coordinator session, delegate via @mention:
-@planner write a harness spec for the dashboard module
-@builder implement Phase 2 per .harness/spec.md
-@qa test the dashboard against .harness/reports/build_dashboard_r1.md
-
-# Start a standalone session as a specific agent:
-claude --agent planner
-claude --agent builder
-
-# Natural language also works (coordinator routes):
-"Add a dark-mode toggle to the settings page"
-```
-
-The coordinator delegates to *named* agents. It does not spawn anonymous ones. Named agents are the unit of accountability — each one has a file, a role, a history of reports.
+Delegate via `@mention` inside a coordinator session, start a standalone session with `claude --agent {role}`, or just use natural language — the coordinator routes it. The coordinator delegates to *named* agents, never anonymous ones: named agents are the unit of accountability — each has a file, a role, and a history of reports.
