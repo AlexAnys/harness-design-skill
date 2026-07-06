@@ -153,7 +153,8 @@ IN=$(cat)
 FILE=$(printf '%s' "$IN" | jq -r '.tool_input.file_path // ""')
 echo "$FILE" | grep -qE '\.harness/|\.md$|settings\.json$' && exit 0
 STAMP=/tmp/coord-edit-ack-$(printf '%s' "$FILE" | shasum | cut -c1-12)
-test -f "$STAMP" && test $(($(date +%s) - $(stat -f %m "$STAMP" 2>/dev/null || echo 0))) -lt 5 && { rm -f "$STAMP"; exit 0; }
+AGE=$(stat -c %Y "$STAMP" 2>/dev/null || stat -f %m "$STAMP" 2>/dev/null || echo 0)  # GNU first: GNU stat -f "succeeds" with filesystem info, so it can't be the fallback
+test -f "$STAMP" && test $(($(date +%s) - AGE)) -lt 5 && { rm -f "$STAMP"; exit 0; }
 touch "$STAMP"
 echo "⚠ coordinator about to edit application code ($FILE). This adds ~2-5KB to your context. If trivial, retry within 5s to proceed. If non-trivial, spawn a Builder." >&2
 exit 2

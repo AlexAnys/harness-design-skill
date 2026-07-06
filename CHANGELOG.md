@@ -4,6 +4,11 @@ All notable changes to this skill. Updates are evidence-based — each entry cit
 
 The format is loosely based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.3.1] — 2026-07-06
+
+- **Hook B contract test** (`evals/hook_b_contract.sh`, self-lint SL-1c; 13 → 14 assertions): the shipped `coordinator-edit-warn.sh` is now extracted from `enforcement.md` and exercised via the real stdin-JSON contract — warns the coordinator on app-code edits, passes Builder-identity / exempt paths / 5-second-retry stamp / fail-open. Closes the "Hook B is validated by hand, not by an eval" open question in `evidence/2026-07-02_v03_pr_adversarial_review.md`.
+- **Scenario-runner plumbing wired** (`evals/run_scenarios.sh`): manual and token-costing, never run by CI or `run-evals.sh`; each case generates into a fresh sandbox and is graded **null-floor first** — a deterministic check that already passes in an empty directory counts as non-discriminative, so an all-green run indistinguishable from an empty directory reads UNKNOWN, not PASS. Grading is uncalibrated (the X3 lesson: FAIL is signal, PASS is weak evidence until a human reads the transcripts); calibration, dual-arm baselines, and blind A/B stay deferred.
+
 ## [0.3.0] — 2026-06
 
 Oracle-first decision layer + correctness fixes + machine-checkable self-lint. Motivated by the 2026-06 orchestration-upgrade research (`evidence/2026-06-17_orchestration_upgrade.md`: R1–R4 audits + X3 blind A/B, n=1 direction-only); every change below is backed by a machine-verified fact or multi-source evidence. Eval delta: evals.json self-lint 0 → 13 executable assertions, all green at release (see the review-pass note below — the initial rewrite shipped 11, hardened to 13 pre-merge).

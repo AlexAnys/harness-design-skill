@@ -45,6 +45,6 @@ Fixed in this review pass (CHANGELOG [0.3.0] → "Review pass (2026-07-02)"):
 
 ## Open questions
 
-- The self-test / contract test cannot yet observe Hook B behaviorally (warn-only, lower stakes) — it is validated by hand, not by an eval.
+- ~~The self-test / contract test cannot yet observe Hook B behaviorally (warn-only, lower stakes) — it is validated by hand, not by an eval.~~ *Resolved in 0.3.1: `evals/hook_b_contract.sh` (self-lint SL-1c) exercises the shipped Hook B end-to-end.*
 - SL-2's verb list is still an enumeration; a genuinely new retired verb outside the list stays invisible until re-audit. The tombstone-marker approach has a residual narrow channel (a live line that cites an `evidence/` path can still be waved through) — accepted for a lint.
-- The scenario evals (SE-001..007) still assert nothing without a generation runner, which stays deliberately deferred.
+- The scenario evals (SE-001..007) still assert nothing without a generation runner, which stays deliberately deferred. *Update 0.3.1: a manual, uncalibrated runner is wired (`evals/run_scenarios.sh`, null-floor gated); grading calibration and dual-arm baselines remain open.*

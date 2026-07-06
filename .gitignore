@@ -10,3 +10,6 @@ node_modules/
 
 # Working artifacts from skill iteration; don't ship
 harness-design-workspace/
+
+# Scenario-runner artifacts (token-costing manual runs); don't ship
+evals/runs/

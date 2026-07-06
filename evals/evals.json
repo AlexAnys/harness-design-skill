@@ -1,6 +1,6 @@
 {
   "skill_name": "harness-design",
-  "rewritten": "2026-06 v0.3.0 — replaces the pre-0.1 shell (prose expectations, assertion groups anchored to dead iteration numbers, an eval#1 expectation that hardcoded worktree parallelism against this repo's own evidence). 2026-07-02 review pass: SL-1 now extracts and executes the shipped Hook A instead of testing a hand-copied regex; SL-2/3/4/9 hardened; 13 assertions.",
+  "rewritten": "2026-06 v0.3.0 — replaces the pre-0.1 shell (prose expectations, assertion groups anchored to dead iteration numbers, an eval#1 expectation that hardcoded worktree parallelism against this repo's own evidence). 2026-07-02 review pass: SL-1 now extracts and executes the shipped Hook A instead of testing a hand-copied regex; SL-2/3/4/9 hardened. 0.3.1 adds the Hook B contract (SL-1c) — 14 assertions.",
   "how_to_run_self_lint": "cd to the skill repo root; for each item run `bash -c \"<assert>\"`; exit 0 = pass. Repo-state assertions — they run today, no scaffold generation needed. SL-1b shells out to evals/hook_a_contract.sh, which needs `jq` (the hook's own runtime dependency).",
   "self_lint": [
     {
@@ -14,6 +14,12 @@
       "principle": "hooks-must-fire",
       "name": "the SHIPPED Hook A fires end-to-end: hook_a_contract.sh extracts the script from enforcement.md and runs it against fixtures via the real stdin-JSON contract (blocks r2+ PASS w/o dated lesson, passes non-commit/fail-open/r1/adversarial-PASS-substring). Catches a phantom env var or dead regex that a string assertion cannot.",
       "assert": "bash evals/hook_a_contract.sh"
+    },
+    {
+      "id": "SL-1c",
+      "principle": "hooks-must-fire",
+      "name": "the SHIPPED Hook B fires end-to-end: hook_b_contract.sh extracts coordinator-edit-warn.sh from enforcement.md and runs it via the real stdin-JSON contract (warns coordinator on app-code edits naming the Builder alternative; passes builder-identity / exempt paths / 5s-retry stamp / fail-open on empty or malformed stdin). Closes the 'Hook B validated by hand, not by an eval' open question.",
+      "assert": "bash evals/hook_b_contract.sh"
     },
     {
       "id": "SL-2",
@@ -83,7 +89,7 @@
     }
   ],
   "scenario_evals": {
-    "status": "requires_generation_run — these need a scaffold-generation harness (runner) which is NOT wired in v0.3.0; dual-arm baselines and blind A/B were explicitly deferred. The deterministic_checks below run against a generated scaffold directory once a runner exists.",
+    "status": "runner wired as of 0.3.1: evals/run_scenarios.sh — MANUAL and token-costing (each case spawns a real claude -p generation into a fresh sandbox); never run by CI or run-evals.sh. Grading is uncalibrated (X3 lesson: FAIL is signal, PASS is weak evidence until a human reads the transcripts) and null-floor gated (a check that already passes in an empty directory counts as non-discriminative; all-green with zero discriminative checks reads UNKNOWN, not PASS). Dual-arm baselines and blind A/B remain deferred. The deterministic_checks below run against each generated sandbox.",
     "cases": [
       {
         "id": "SE-001",
